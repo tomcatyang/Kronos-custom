@@ -1,0 +1,53 @@
+# CPU-only smoke training config for Kronos custom CSV fine-tuning.
+# This is intentionally small so the pipeline can run without a GPU.
+
+data:
+  data_path: "/home/dev/high-freq-trade-sys/Kronos-custom/finetune_csv/data/HK_ali_09988_kline_5min_all.csv"
+  lookback_window: 128
+  predict_window: 16
+  max_context: 128
+  clip: 5.0
+  train_ratio: 0.85
+  val_ratio: 0.15
+  test_ratio: 0.0
+
+training:
+  tokenizer_epochs: 1
+  basemodel_epochs: 1
+  batch_size: 1
+  log_interval: 10
+  num_workers: 0
+  seed: 42
+
+  tokenizer_learning_rate: 0.0002
+  predictor_learning_rate: 0.000001
+
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.1
+  accumulation_steps: 1
+
+model_paths:
+  pretrained_tokenizer: "/home/dev/high-freq-trade-sys/Kronos-custom/models/Kronos-Tokenizer-base"
+  pretrained_predictor: "/home/dev/high-freq-trade-sys/Kronos-custom/models/Kronos-base"
+
+  exp_name: "HK_ali_09988_cpu_smoke"
+  base_path: "/home/dev/high-freq-trade-sys/Kronos-custom/finetune_csv/finetuned"
+
+  base_save_path: ""
+  finetuned_tokenizer: ""
+
+  tokenizer_save_name: "tokenizer"
+  basemodel_save_name: "basemodel"
+
+experiment:
+  name: "kronos_cpu_smoke_finetune"
+  description: "CPU smoke run for Kronos custom CSV fine-tuning"
+  use_comet: false
+  train_tokenizer: true
+  train_basemodel: true
+  skip_existing: false
+
+device:
+  use_cuda: false
+  device_id: 0
