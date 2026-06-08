@@ -3,9 +3,16 @@ set -euo pipefail
 
 # Usage:
 #   bash scripts/train_cpu_smoke.sh
+#     Train both tokenizer and basemodel with the CPU smoke config.
+#
 #   bash scripts/train_cpu_smoke.sh --skip-basemodel
+#     Train tokenizer only.
+#
 #   bash scripts/train_cpu_smoke.sh --skip-tokenizer
+#     Train basemodel only. Requires an existing fine-tuned tokenizer path.
+#
 #   bash scripts/train_cpu_smoke.sh --skip-existing
+#     Train missing phases only; skip tokenizer/basemodel if best_model exists.
 #
 # This script runs the CPU smoke-training config. Extra arguments are passed
 # directly to finetune_csv/train_sequential.py.
