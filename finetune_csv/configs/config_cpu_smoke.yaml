@@ -2,7 +2,7 @@
 # This is intentionally small so the pipeline can run without a GPU.
 
 data:
-  data_path: "/home/dev/high-freq-trade-sys/Kronos-custom/finetune_csv/data/HK_ali_09988_kline_5min_all.csv"
+  data_path: "./finetune_csv/data/HK_ali_09988_kline_5min_all.csv"
   lookback_window: 128
   predict_window: 16
   max_context: 128
@@ -28,11 +28,11 @@ training:
   accumulation_steps: 1
 
 model_paths:
-  pretrained_tokenizer: "/home/dev/high-freq-trade-sys/Kronos-custom/models/Kronos-Tokenizer-base"
-  pretrained_predictor: "/home/dev/high-freq-trade-sys/Kronos-custom/models/Kronos-base"
+  pretrained_tokenizer: "./models/Kronos-Tokenizer-base"
+  pretrained_predictor: "./models/Kronos-base"
 
   exp_name: "HK_ali_09988_cpu_smoke"
-  base_path: "/home/dev/high-freq-trade-sys/Kronos-custom/finetune_csv/finetuned"
+  base_path: "./finetune_csv/finetuned"
 
   base_save_path: ""
   finetuned_tokenizer: ""

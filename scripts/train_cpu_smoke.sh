@@ -24,8 +24,8 @@ if [[ ! -x ".venv/bin/python" ]]; then
   exit 1
 fi
 
-cd finetune_csv
+export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
 
-../.venv/bin/python train_sequential.py \
-  --config configs/config_cpu_smoke.yaml \
+.venv/bin/python finetune_csv/train_sequential.py \
+  --config finetune_csv/configs/config_cpu_smoke.yaml \
   "$@"
