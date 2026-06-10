@@ -1,0 +1,53 @@
+# CPU-only QQQ 5-minute training config for Kronos custom CSV fine-tuning.
+# Paths are relative to the Kronos-custom project root.
+
+data:
+  data_path: "./finetune_csv/data/QQQ_5m_databento.csv"
+  lookback_window: 256
+  predict_window: 12
+  max_context: 256
+  clip: 5.0
+  train_ratio: 0.80
+  val_ratio: 0.10
+  test_ratio: 0.10
+
+training:
+  tokenizer_epochs: 1
+  basemodel_epochs: 1
+  batch_size: 1
+  log_interval: 50
+  num_workers: 0
+  seed: 42
+
+  tokenizer_learning_rate: 0.0002
+  predictor_learning_rate: 0.000001
+
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.1
+  accumulation_steps: 1
+
+model_paths:
+  pretrained_tokenizer: "./models/Kronos-Tokenizer-base"
+  pretrained_predictor: "./models/Kronos-base"
+
+  exp_name: "QQQ_5m_cpu"
+  base_path: "./finetune_csv/finetuned"
+
+  base_save_path: ""
+  finetuned_tokenizer: ""
+
+  tokenizer_save_name: "tokenizer"
+  basemodel_save_name: "basemodel"
+
+experiment:
+  name: "kronos_qqq_5m_cpu_finetune"
+  description: "CPU run for QQQ 5-minute Databento CSV fine-tuning"
+  use_comet: false
+  train_tokenizer: true
+  train_basemodel: true
+  skip_existing: false
+
+device:
+  use_cuda: false
+  device_id: 0
