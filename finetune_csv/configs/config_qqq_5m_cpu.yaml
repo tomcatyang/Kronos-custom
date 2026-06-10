@@ -32,7 +32,7 @@ model_paths:
   pretrained_predictor: "./models/Kronos-base"
 
   exp_name: "QQQ_5m_cpu"
-  base_path: "./finetune_csv/finetuned"
+  base_path: "./trained_models"
 
   base_save_path: ""
   finetuned_tokenizer: ""

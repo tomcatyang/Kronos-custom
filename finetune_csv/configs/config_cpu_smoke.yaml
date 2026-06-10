@@ -32,7 +32,7 @@ model_paths:
   pretrained_predictor: "./models/Kronos-base"
 
   exp_name: "HK_ali_09988_cpu_smoke"
-  base_path: "./finetune_csv/finetuned"
+  base_path: "./trained_models"
 
   base_save_path: ""
   finetuned_tokenizer: ""
