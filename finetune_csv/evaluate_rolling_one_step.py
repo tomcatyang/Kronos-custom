@@ -65,6 +65,15 @@ def load_test_split(config: CustomFinetuneConfig) -> pd.DataFrame:
     return df.iloc[val_end:].reset_index(drop=True)
 
 
+def parse_intraday_time(value: str):
+    if not value:
+        return None
+    try:
+        return pd.to_datetime(value, format="%H:%M").time()
+    except ValueError as exc:
+        raise ValueError(f"Invalid time format for --min-time: {value}. Use HH:MM, e.g. 10:30.") from exc
+
+
 def build_one_step_window(test_df: pd.DataFrame, start: int, context_len: int):
     context = test_df.iloc[start : start + context_len].copy()
     future = test_df.iloc[start + context_len : start + context_len + 1].copy()
@@ -196,6 +205,7 @@ def evaluate(
     windows: int,
     calibration_windows: int,
     calibration_metric: str,
+    min_time: str,
     device: str,
 ) -> None:
     config = CustomFinetuneConfig(config_path)
@@ -209,14 +219,27 @@ def evaluate(
             f"lookback_window={context_len}, calibration_windows={calibration_windows}"
         )
 
-    actual_windows = min(windows, max_start - min_start + 1)
-    starts = np.linspace(min_start, max_start, actual_windows, dtype=int)
+    min_intraday_time = parse_intraday_time(min_time)
+    candidate_starts = np.arange(min_start, max_start + 1)
+    if min_intraday_time is not None:
+        y_times = test_df["timestamps"].iloc[candidate_starts + context_len].dt.time
+        candidate_starts = candidate_starts[np.array(y_times >= min_intraday_time)]
+    if len(candidate_starts) == 0:
+        raise ValueError(
+            f"No evaluation windows remain after applying min_time={min_time!r}. "
+            "Try an earlier time or remove the filter."
+        )
+
+    actual_windows = min(windows, len(candidate_starts))
+    positions = np.linspace(0, len(candidate_starts) - 1, actual_windows, dtype=int)
+    starts = candidate_starts[positions]
 
     print(f"config={config_path}")
     print(f"tokenizer_path={config.tokenizer_best_model_path}")
     print(f"basemodel_path={config.basemodel_best_model_path}")
     print(f"test_rows={len(test_df)}, windows={len(starts)}, calibration_windows={calibration_windows}")
     print(f"calibration_metric={calibration_metric}")
+    print(f"min_time={min_time or 'none'}")
     print(f"test_range={test_df['timestamps'].iloc[0]} -> {test_df['timestamps'].iloc[-1]}")
     print(f"lookback_window={context_len}, predict_window=1")
     print_candidates()
@@ -343,6 +366,11 @@ def parse_args():
             "mean(sign(pred_close-last_close) * actual_return)。"
         ),
     )
+    parser.add_argument(
+        "--min-time",
+        default="",
+        help="只评估目标 K 线时间不早于该值的窗口，格式 HH:MM；留空表示不过滤。",
+    )
     parser.add_argument("--device", default="cpu", help="Torch 设备，例如 cpu 或 cuda:0。")
     return parser.parse_args()
 
@@ -354,6 +382,7 @@ def main():
         args.windows,
         args.calibration_windows,
         args.calibration_metric,
+        args.min_time,
         args.device,
     )
 

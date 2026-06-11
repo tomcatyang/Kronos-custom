@@ -19,10 +19,12 @@ fi
 
 export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
 
-.venv/bin/python finetune_csv/evaluate_rolling_one_step.py \
-  --config finetune_csv/configs/config_qqq_5m_cpu.yaml \
-  --windows 50 \
-  --calibration-windows 10 \
-  --calibration-metric signed_return \
-  --device cpu \
-  "$@"
+args=(
+  --config finetune_csv/configs/config_qqq_5m_cpu.yaml
+  --windows 50
+  --calibration-windows 10
+  --calibration-metric signed_return
+  --device cpu
+)
+
+.venv/bin/python finetune_csv/evaluate_rolling_one_step.py "${args[@]}" "$@"
